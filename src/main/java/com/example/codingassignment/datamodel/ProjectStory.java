@@ -72,4 +72,16 @@ public class ProjectStory {
     public void setParentUid(String parentUid) {
         this.parentUid = parentUid;
     }
+
+    @Override
+    public String toString() {
+        return "ProjectStory{" +
+                "uid='" + uid + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", parentUid='" + parentUid + '\'' +
+                '}';
+    }
 }

@@ -12,4 +12,8 @@ public interface ProjectStoryService {
 
     public ProjectStory addNewTaskOrSubproject(ProjectStory projectStory);
 
+    public ProjectStory calculateDates(String Uid);
+
+    public boolean findProjectByParentUid(String parentUid);
+
 }
