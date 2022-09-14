@@ -60,20 +60,4 @@ public class IOUtilService {
                 .filter(c -> Objects.equals(c.getParentUid(), parent.getUid()))
                 .collect(Collectors.toList());
     }
-
-    private static List<ProjectStory> findAllDescendants(ProjectStory parent, List<ProjectStory> children) {
-        Set<ProjectStory> knownParents = new HashSet<>();
-        List<ProjectStory> result = new ArrayList<>();
-        for (ProjectStory child : children) {
-            if (Objects.equals(child.getParentUid(), parent.getUid())) {
-                result.add(child);
-                if(!knownParents.contains(child)){
-                    knownParents.add(child);
-                    result.addAll(findAllDescendants(child, children));
-                }
-            }
-        }
-        return result;
-    }
-
 }
