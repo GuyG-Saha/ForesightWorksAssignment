@@ -2,6 +2,7 @@ package com.example.codingassignment.services;
 
 import com.example.codingassignment.datamodel.ProjectStory;
 import com.example.codingassignment.repository.ProjectStoryRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -107,7 +108,7 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
     }
 
     @Override
-    public ProjectStory applyStartDateToProject(String projectUid) {
+    public ProjectStory calculateDatesForProject(String projectUid) {
         List<ProjectStory> sortedRelatedSubprojects =
                 getRelatedSubprojectsAndTasks(allProjects, projectUid);
         sortedRelatedSubprojects = sortByStartDate(sortedRelatedSubprojects);
@@ -119,6 +120,36 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
             projectStoryRepository.save(theProject);
         }
         return theProject;
+    }
+
+    @Override
+    public ProjectStory deleteTaskOrSubproject(String Uid) {
+        ProjectStory SubprojectOrTask = findProjectByUid(Uid);
+        if (Objects.nonNull(SubprojectOrTask)) {
+            // Check if not a leaf / The Newest Task
+            List<ProjectStory> relatedSubprojectsAndTasks = getRelatedSubprojectsAndTasks(allProjects, Uid);
+            if (relatedSubprojectsAndTasks.size() > 0) {
+                relatedSubprojectsAndTasks = sortByStartDate(relatedSubprojectsAndTasks);
+                if (relatedSubprojectsAndTasks.get(relatedSubprojectsAndTasks.size() - 1).getUid().equals(Uid)
+                && Objects.equals(SubprojectOrTask.getType(), "TYPE")) {
+                    // Can't delete latest Task
+                    return null;
+                } else {
+                    projectStoryRepository.delete(SubprojectOrTask);
+                    return SubprojectOrTask;
+                }
+            } else {
+                projectStoryRepository.delete(SubprojectOrTask);
+                return SubprojectOrTask;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String getJsonProjectHierarchy(String Uid) throws JsonProcessingException {
+        return IOUtilService.exportProjectHierarchy(Uid);
     }
 
     private List<ProjectStory> getRelatedSubprojectsAndTasks(List<ProjectStory> projectStories, String projectUid) {

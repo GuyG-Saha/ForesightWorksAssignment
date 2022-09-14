@@ -1,6 +1,7 @@
 package com.example.codingassignment.services;
 
 import com.example.codingassignment.datamodel.ProjectStory;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 
@@ -18,6 +19,10 @@ public interface ProjectStoryService {
 
     public boolean findProjectByParentUid(String parentUid);
 
-    public ProjectStory applyStartDateToProject(String projectUid);
+    public ProjectStory calculateDatesForProject(String projectUid);
+
+    public ProjectStory deleteTaskOrSubproject(String Uid);
+
+    public String getJsonProjectHierarchy(String Uid) throws JsonProcessingException;
 
 }

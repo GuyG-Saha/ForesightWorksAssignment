@@ -1,7 +1,7 @@
 package com.example.codingassignment;
 
 import com.example.codingassignment.datamodel.ProjectStory;
-import com.example.codingassignment.services.FileParser;
+import com.example.codingassignment.services.IOUtilService;
 import com.example.codingassignment.services.ProjectStoryService;
 import com.example.codingassignment.services.ProjectStoryServiceImpl;
 import org.springframework.boot.SpringApplication;
@@ -22,8 +22,8 @@ public class CodingassignmentApplication {
 		List<ProjectStory> allProjects = projectStoryService.getAllProjects();
 		if (allProjects.size() == 0) {
 			System.out.println("INFO:: Loading projects from file...");
-			FileParser fileParser = configurableApplicationContext.getBean(FileParser.class);
-			allProjects = FileParser.parseAllProjectsFromFile();
+			IOUtilService IOUtilService = configurableApplicationContext.getBean(IOUtilService.class);
+			allProjects = IOUtilService.parseAllProjectsFromFile();
 			if (allProjects.size() == 0)
 				throw new RuntimeException("ERROR:: File is empty");
 			System.out.println("INFO:: Loaded " + allProjects.size() + " projects from .json file");

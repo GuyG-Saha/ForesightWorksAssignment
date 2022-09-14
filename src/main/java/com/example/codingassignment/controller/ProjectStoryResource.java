@@ -2,6 +2,7 @@ package com.example.codingassignment.controller;
 
 import com.example.codingassignment.datamodel.ProjectStory;
 import com.example.codingassignment.services.ProjectStoryService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,20 @@ public class ProjectStoryResource {
     @PostMapping("/applyDatesToProjects/{projectStoryUid}")
     public ResponseEntity<ProjectStory> applyStartAndEndDates(@PathVariable String projectStoryUid) {
         if (!projectStoryUid.isEmpty()) {
-            return ResponseEntity.ok(projectStoryService.applyStartDateToProject(projectStoryUid));
+            return ResponseEntity.ok(projectStoryService.calculateDatesForProject(projectStoryUid));
         } else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @DeleteMapping("/projects/delete/{projectStoryUid}")
+    public ResponseEntity<ProjectStory> deleteTaskOrSubprojects(@PathVariable String projectStoryUid) {
+        if (Objects.nonNull(projectStoryService.deleteTaskOrSubproject(projectStoryUid)))
+            return ResponseEntity.ok(projectStoryService.deleteTaskOrSubproject(projectStoryUid));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping("/projects/getHierarchy/{Uid}")
+    public String getProjectHierarchy(@PathVariable String Uid) throws JsonProcessingException {
+        return projectStoryService.getJsonProjectHierarchy(Uid);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.codingassignment.config;
 
 import com.example.codingassignment.datamodel.ProjectStory;
-import com.example.codingassignment.services.FileParser;
+import com.example.codingassignment.services.IOUtilService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +12,6 @@ import java.util.List;
 public class DataConfig {
     @Bean
     public List<ProjectStory> allProjects() throws IOException {
-        return FileParser.parseAllProjectsFromFile();
+        return IOUtilService.parseAllProjectsFromFile();
     }
 }
