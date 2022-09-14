@@ -14,6 +14,10 @@ public interface ProjectStoryService {
 
     public ProjectStory calculateDates(String Uid);
 
+    public ProjectStory findProjectByUid(String Uid);
+
     public boolean findProjectByParentUid(String parentUid);
+
+    public ProjectStory applyStartDateToProject(String projectUid);
 
 }

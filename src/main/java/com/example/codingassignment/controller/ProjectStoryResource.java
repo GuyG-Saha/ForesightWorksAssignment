@@ -28,10 +28,11 @@ public class ProjectStoryResource {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @GetMapping("/related/{projectStoryUid}")
-    public ResponseEntity<ProjectStory> findRelated(@PathVariable String projectStoryUid) {
-        if (Objects.nonNull(projectStoryService.calculateDates(projectStoryUid)))
-            return ResponseEntity.ok(projectStoryService.calculateDates(projectStoryUid));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    @PostMapping("/applyDatesToProjects/{projectStoryUid}")
+    public ResponseEntity<ProjectStory> applyStartAndEndDates(@PathVariable String projectStoryUid) {
+        if (!projectStoryUid.isEmpty()) {
+            return ResponseEntity.ok(projectStoryService.applyStartDateToProject(projectStoryUid));
+        } else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

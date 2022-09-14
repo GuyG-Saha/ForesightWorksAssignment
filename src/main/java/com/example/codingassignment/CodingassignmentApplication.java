@@ -28,6 +28,7 @@ public class CodingassignmentApplication {
 				throw new RuntimeException("ERROR:: File is empty");
 			System.out.println("INFO:: Loaded " + allProjects.size() + " projects from .json file");
 			allProjects.stream().forEach(projectStory -> projectStoryService.saveProject(projectStory));
+
 			System.out.println("INFO:: Saved projects in H2 DB");
 		} else
 			System.out.println("INFO:: Loaded " + allProjects.size() + " projects from DB");

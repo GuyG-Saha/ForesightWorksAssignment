@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -82,7 +83,16 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
             return p;
         }
 
-        private List<ProjectStory> findRelatedSubprojectsOrTasks(String Uid) {
+    @Override
+    public ProjectStory findProjectByUid(String Uid) {
+        return allProjects
+                .stream()
+                .filter(projectStory -> projectStory.getUid().equals(Uid))
+                .findFirst()
+                .get();
+    }
+
+    private List<ProjectStory> findRelatedSubprojectsOrTasks(String Uid) {
             return allProjects.stream()
                     .filter(project -> Objects.nonNull(project.getParentUid()))
                     .filter(project -> Objects.equals(project.getParentUid(), Uid))
@@ -94,5 +104,45 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
         return allProjects.stream()
                 .filter(projectStory -> Objects.equals(projectStory.getParentUid(), parentUid))
                 .count() > 0;
+    }
+
+    @Override
+    public ProjectStory applyStartDateToProject(String projectUid) {
+        List<ProjectStory> sortedRelatedSubprojects =
+                getRelatedSubprojectsAndTasks(allProjects, projectUid);
+        sortedRelatedSubprojects = sortByStartDate(sortedRelatedSubprojects);
+        List<ProjectStory> sortedByEndRelatedSubprojects = sortByEndDate(sortedRelatedSubprojects);
+        ProjectStory theProject = findProjectByUid(projectUid);
+        if (sortedRelatedSubprojects.size() > 0 && sortedByEndRelatedSubprojects.size() > 0) {
+            theProject.setStartDate(sortedRelatedSubprojects.get(0).getStartDate());
+            theProject.setEndDate((sortedRelatedSubprojects.get(0)).getEndDate());
+            projectStoryRepository.save(theProject);
+        }
+        return theProject;
+    }
+
+    private List<ProjectStory> getRelatedSubprojectsAndTasks(List<ProjectStory> projectStories, String projectUid) {
+        ProjectStory someProject = findProjectByUid(projectUid);
+
+        return projectStories.stream()
+                .filter(projectStory -> Objects.nonNull(projectStory.getUid()))
+                .filter(projectStory -> Objects.equals(someProject.getUid(), projectStory.getParentUid()))
+                .collect(Collectors.toList());
+    }
+
+    private List<ProjectStory> sortByStartDate(List<ProjectStory> projectStories) {
+        return projectStories
+                .stream()
+                .filter(projectStory -> Objects.nonNull(projectStory.getStartDate()))
+                .sorted(Comparator.comparing(ProjectStory::getStartDate))
+                .collect(Collectors.toList());
+    }
+
+    private List<ProjectStory> sortByEndDate(List<ProjectStory> projectStories) {
+        return projectStories
+                .stream()
+                .filter(projectStory -> Objects.nonNull(projectStory.getStartDate()))
+                .sorted((p1, p2) -> p2.getEndDate().compareTo(p1.getEndDate()))
+                .collect(Collectors.toList());
     }
 }
