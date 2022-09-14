@@ -4,11 +4,11 @@ import java.util.List;
 
 public class ProjectStoryWithChildren {
     private ProjectStory projectStory;
-    private List<ProjectStory> children;
+    private List<ProjectStory> allDescendants;
 
-    public ProjectStoryWithChildren(ProjectStory projectStory, List<ProjectStory> children) {
+    public ProjectStoryWithChildren(ProjectStory projectStory, List<ProjectStory> allDescendants) {
         this.projectStory = projectStory;
-        this.children = children;
+        this.allDescendants = allDescendants;
     }
 
     public ProjectStoryWithChildren() {
@@ -22,11 +22,11 @@ public class ProjectStoryWithChildren {
         this.projectStory = projectStory;
     }
 
-    public List<ProjectStory> getChildren() {
-        return children;
+    public List<ProjectStory> getAllDescendants() {
+        return allDescendants;
     }
 
-    public void setChildren(List<ProjectStory> children) {
-        this.children = children;
+    public void setAllDescendants(List<ProjectStory> allDescendants) {
+        this.allDescendants = allDescendants;
     }
 }

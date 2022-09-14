@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,17 +34,46 @@ public class IOUtilService {
 
     public static String exportProjectHierarchy(String Uid) throws JsonProcessingException {
         ProjectStory theProject = projectStoryService.findProjectByUid(Uid);
-        List<ProjectStory> projectChildren = projectStoryService
-                .getAllProjects()
-                .stream()
-                .filter(c -> Objects.equals(c.getParentUid(), Uid))
-                .collect(Collectors.toList());
+        List<ProjectStory> projectChildren = getChildren(theProject);
+        List<ProjectStory> result = new ArrayList<>();
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        processRecursionForHierarchy(theProject, result);
         projectStoryWithChildren = new ProjectStoryWithChildren();
-        projectStoryWithChildren.setChildren(projectChildren);
         projectStoryWithChildren.setProjectStory(theProject);
+        projectStoryWithChildren.setAllDescendants(result);
+        System.out.println("INFO:: num of descendants by recursion: " + result.size());
         String json = ow.writeValueAsString(projectStoryWithChildren);
         return json;
+    }
+
+    private static void processRecursionForHierarchy(ProjectStory parent, List<ProjectStory> result) {
+        for (ProjectStory child : getChildren(parent)) {
+            result.add(child);
+            processRecursionForHierarchy(child, result);
+        }
+    }
+
+    private static List<ProjectStory> getChildren(ProjectStory parent) {
+        return projectStoryService
+                .getAllProjects()
+                .stream()
+                .filter(c -> Objects.equals(c.getParentUid(), parent.getUid()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ProjectStory> findAllDescendants(ProjectStory parent, List<ProjectStory> children) {
+        Set<ProjectStory> knownParents = new HashSet<>();
+        List<ProjectStory> result = new ArrayList<>();
+        for (ProjectStory child : children) {
+            if (Objects.equals(child.getParentUid(), parent.getUid())) {
+                result.add(child);
+                if(!knownParents.contains(child)){
+                    knownParents.add(child);
+                    result.addAll(findAllDescendants(child, children));
+                }
+            }
+        }
+        return result;
     }
 
 }
