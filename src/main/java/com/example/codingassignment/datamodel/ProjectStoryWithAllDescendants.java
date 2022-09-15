@@ -2,16 +2,16 @@ package com.example.codingassignment.datamodel;
 
 import java.util.List;
 
-public class ProjectStoryWithChildren {
+public class ProjectStoryWithAllDescendants {
     private ProjectStory projectStory;
     private List<ProjectStory> allDescendants;
 
-    public ProjectStoryWithChildren(ProjectStory projectStory, List<ProjectStory> allDescendants) {
+    public ProjectStoryWithAllDescendants(ProjectStory projectStory, List<ProjectStory> allDescendants) {
         this.projectStory = projectStory;
         this.allDescendants = allDescendants;
     }
 
-    public ProjectStoryWithChildren() {
+    public ProjectStoryWithAllDescendants() {
     }
 
     public ProjectStory getProjectStory() {

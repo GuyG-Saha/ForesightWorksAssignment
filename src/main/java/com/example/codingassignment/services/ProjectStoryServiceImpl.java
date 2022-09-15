@@ -19,6 +19,7 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
     @Autowired
     private List<ProjectStory> allProjects;
 
+
     public ProjectStoryServiceImpl(ProjectStoryRepository projectStoryRepository, List<ProjectStory> allProjects) {
         this.projectStoryRepository = projectStoryRepository;
         this.allProjects = allProjects;
@@ -41,7 +42,6 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
                 .forEachRemaining(allProjects::add);
         return allProjects;
     }
-
     @Override
     public ProjectStory addNewTaskOrSubproject(ProjectStory projectStory) {
         // Check if parentUid is null
@@ -149,7 +149,23 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
 
     @Override
     public String getJsonProjectHierarchy(String Uid) throws JsonProcessingException {
-        return IOUtilService.exportProjectHierarchy(Uid);
+        ProjectStory theProject = findProjectByUid(Uid);
+        List<ProjectStory> allDescendants = calculateProjectHierarchy(Uid);
+        return IOUtilService.exportProjectHierarchy(theProject, allDescendants);
+    }
+
+    private List<ProjectStory> calculateProjectHierarchy(String Uid) {
+        ProjectStory theProject = findProjectByUid(Uid);
+        List<ProjectStory> result = new ArrayList<>();
+        processRecursionForHierarchy(theProject, result);
+        return result;
+    }
+
+    private void processRecursionForHierarchy(ProjectStory parent, List<ProjectStory> result) {
+        for (ProjectStory child : getProjectChildren(parent)) {
+            result.add(child);
+            processRecursionForHierarchy(child, result);
+        }
     }
 
     private List<ProjectStory> getRelatedSubprojectsAndTasks(List<ProjectStory> projectStories, String projectUid) {
@@ -174,6 +190,13 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
                 .stream()
                 .filter(projectStory -> Objects.nonNull(projectStory.getStartDate()))
                 .sorted((p1, p2) -> p2.getEndDate().compareTo(p1.getEndDate()))
+                .collect(Collectors.toList());
+    }
+
+    private List<ProjectStory> getProjectChildren(ProjectStory parent) {
+        return  getAllProjects()
+                .stream()
+                .filter(c -> Objects.equals(c.getParentUid(), parent.getUid()))
                 .collect(Collectors.toList());
     }
 }
