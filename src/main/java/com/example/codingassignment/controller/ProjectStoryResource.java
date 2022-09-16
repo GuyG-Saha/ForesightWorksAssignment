@@ -44,8 +44,8 @@ public class ProjectStoryResource {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @GetMapping("/projects/getHierarchy/{Uid}")
-    public String getProjectHierarchy(@PathVariable String Uid) throws JsonProcessingException {
-        return projectStoryService.getJsonProjectHierarchy(Uid);
+    @GetMapping("/projects/getHierarchy/{projectStoryUid}")
+    public String getProjectHierarchy(@PathVariable String projectStoryUid) throws JsonProcessingException {
+        return projectStoryService.getJsonProjectHierarchy(projectStoryUid);
     }
 }

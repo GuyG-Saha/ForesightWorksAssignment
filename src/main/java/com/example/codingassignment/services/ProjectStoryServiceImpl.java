@@ -62,28 +62,6 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
             return null;
         }
 
-        public ProjectStory calculateDates(String projectStoryId) {
-        ProjectStory p = allProjects
-                .stream()
-                .filter(project -> Objects.equals(project.getUid(), projectStoryId))
-                .collect(Collectors.toList()).get(0);
-            if (findProjectByParentUid(projectStoryId)) {
-                List<ProjectStory> related = allProjects.stream()
-                        .filter(project -> Objects.nonNull(project.getParentUid()))
-                        .filter(project -> Objects.equals(project.getParentUid(), projectStoryId))
-                        .collect(Collectors.toList());
-                if (related.size() == 1) {
-                            p.setStartDate(related.get(0).getStartDate());
-                            p.setEndDate(related.get(0).getEndDate());
-                            return saveProject(p);
-                } else if (related.size() == 0) {
-                    return null;
-                }
-            } else
-                return null;
-            return p;
-        }
-
     @Override
     public ProjectStory findProjectByUid(String Uid) {
         return allProjects
@@ -93,14 +71,6 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
                 .get();
     }
 
-    private List<ProjectStory> findRelatedSubprojectsOrTasks(String Uid) {
-            return allProjects.stream()
-                    .filter(project -> Objects.nonNull(project.getParentUid()))
-                    .filter(project -> Objects.equals(project.getParentUid(), Uid))
-                    .collect(Collectors.toList());
-        }
-
-
     public boolean findProjectByParentUid(String parentUid) {
         return allProjects.stream()
                 .filter(projectStory -> Objects.equals(projectStory.getParentUid(), parentUid))
@@ -109,16 +79,15 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
 
     @Override
     public ProjectStory calculateDatesForProject(String projectUid) {
-        List<ProjectStory> sortedRelatedSubprojects =
-                getRelatedSubprojectsAndTasks(allProjects, projectUid);
-        sortedRelatedSubprojects = sortByStartDate(sortedRelatedSubprojects);
-        List<ProjectStory> sortedByEndRelatedSubprojects = sortByEndDate(sortedRelatedSubprojects);
         ProjectStory theProject = findProjectByUid(projectUid);
-        if (sortedRelatedSubprojects.size() > 0 && sortedByEndRelatedSubprojects.size() > 0) {
-            theProject.setStartDate(sortedRelatedSubprojects.get(0).getStartDate());
-            theProject.setEndDate((sortedRelatedSubprojects.get(0)).getEndDate());
-            projectStoryRepository.save(theProject);
-        }
+        List<ProjectStory> allDescendants = calculateProjectHierarchy(projectUid);
+        List<ProjectStory> sortedByStartDate = sortByStartDate(allDescendants);
+        List<ProjectStory> sortedByEndDate = sortByEndDate(allDescendants);
+        if (sortedByStartDate.size() > 0)
+            theProject.setStartDate(sortedByStartDate.get(0).getStartDate());
+        if (sortedByEndDate.size() > 0)
+            theProject.setEndDate(sortedByEndDate.get(0).getEndDate());
+        projectStoryRepository.save(theProject);
         return theProject;
     }
 
