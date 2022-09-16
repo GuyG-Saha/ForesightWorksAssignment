@@ -13,13 +13,13 @@ public interface ProjectStoryService {
 
     public ProjectStory addNewTaskOrSubproject(ProjectStory projectStory);
 
-    public ProjectStory calculateDates(String Uid);
-
     public ProjectStory findProjectByUid(String Uid);
 
     public boolean findProjectByParentUid(String parentUid);
 
     public ProjectStory calculateDatesForProject(String projectUid);
+
+    public ProjectStory calculateCompletionStatus(String projectUid);
 
     public ProjectStory deleteTaskOrSubproject(String Uid);
 

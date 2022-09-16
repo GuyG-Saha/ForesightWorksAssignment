@@ -48,4 +48,9 @@ public class ProjectStoryResource {
     public String getProjectHierarchy(@PathVariable String projectStoryUid) throws JsonProcessingException {
         return projectStoryService.getJsonProjectHierarchy(projectStoryUid);
     }
+
+    @GetMapping("/getCompletionStatus/{projectStoryUid}")
+    public ResponseEntity<ProjectStory> getCompletionStatus(@PathVariable String projectStoryUid) {
+        return ResponseEntity.ok(projectStoryService.calculateCompletionStatus(projectStoryUid));
+    }
 }

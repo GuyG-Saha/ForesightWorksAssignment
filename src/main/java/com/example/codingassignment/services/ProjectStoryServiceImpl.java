@@ -6,10 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,6 +89,16 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
     }
 
     @Override
+    public ProjectStory calculateCompletionStatus(String projectUid) {
+        ProjectStory theProject = findProjectByUid(projectUid);
+        Integer completionStatus = calculateCompletionStatusByDates(theProject);
+        theProject.setCompletionStatusPercentage(completionStatus);
+        projectStoryRepository.save(theProject);
+        return theProject;
+
+    }
+
+    @Override
     public ProjectStory deleteTaskOrSubproject(String Uid) {
         ProjectStory SubprojectOrTask = findProjectByUid(Uid);
         if (Objects.nonNull(SubprojectOrTask)) {
@@ -167,5 +174,19 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
                 .stream()
                 .filter(c -> Objects.equals(c.getParentUid(), parent.getUid()))
                 .collect(Collectors.toList());
+    }
+
+    private Integer calculateCompletionStatusByDates(ProjectStory theProject) {
+        if (!Objects.nonNull(theProject.getStartDate()) &&
+                !Objects.nonNull(theProject.getEndDate())) {
+            theProject = calculateDatesForProject(theProject.getUid());
+        }
+        double diffInDays = ((theProject.getEndDate().getTime() - theProject.getStartDate().getTime())
+                / (1000.0 * 60.0 * 60.0 * 24.0));
+        Date currentDate = new Date(System.currentTimeMillis());
+        double diffFromStartTillNow = ((currentDate.getTime() - theProject.getStartDate().getTime())
+                / (1000.0 * 60.0 * 60.0 * 24.0));
+        int value = ((int) (diffFromStartTillNow / diffInDays * 100));
+        return value > 100 ? 100 : Math.max(value, 0);
     }
 }

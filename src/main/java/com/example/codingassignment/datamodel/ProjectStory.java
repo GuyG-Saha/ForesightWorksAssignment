@@ -12,17 +12,20 @@ public class ProjectStory {
     private Date startDate;
     private Date endDate;
     private String parentUid;
+    private Integer completionStatusPercentage;
 
     public ProjectStory() {
     }
 
-    public ProjectStory(String uid, String name, String type, Date startDate, Date endDate, String parentUid) {
+    public ProjectStory(String uid, String name, String type, Date startDate, Date endDate, String parentUid
+            , Integer completionStatusPercentage) {
         this.uid = uid;
         this.name = name;
         this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
         this.parentUid = parentUid;
+        this.completionStatusPercentage = completionStatusPercentage;
     }
 
     public String getUid() {
@@ -73,6 +76,14 @@ public class ProjectStory {
         this.parentUid = parentUid;
     }
 
+    public Integer getCompletionStatusPercentage() {
+        return completionStatusPercentage;
+    }
+
+    public void setCompletionStatusPercentage(Integer completionStatusPercentage) {
+        this.completionStatusPercentage = completionStatusPercentage;
+    }
+
     @Override
     public String toString() {
         return "ProjectStory{" +
@@ -82,6 +93,7 @@ public class ProjectStory {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", parentUid='" + parentUid + '\'' +
+                ", completionStatusPercentage=" + completionStatusPercentage +
                 '}';
     }
 }
