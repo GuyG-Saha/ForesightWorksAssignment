@@ -49,13 +49,18 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
             // Task or Subproject
             if (projectStory.getType().equalsIgnoreCase("TASK")) {
                 // Task
+                allProjects.add(projectStory);
                 return projectStoryRepository.save(projectStory);
             } else if (projectStory.getType().equalsIgnoreCase("PROJECT")) {
                 // Subproject - check if there is a related TASK
-                if (findProjectByParentUid(projectStory.getUid()))
+                if (findProjectByParentUid(projectStory.getUid())) {
+                    allProjects.add(projectStory);
                     return projectStoryRepository.save(projectStory);
+                }
+                logger.error("Not found a related TASK for PROJECT " + projectStory.getName() + " id " + projectStory.getUid());
                 return null;
             } else
+                logger.error("Unknown ProjectStory type entered");
                 return null;
         }
             logger.error("parentUid is empty or null");
@@ -66,7 +71,7 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
     public ProjectStory findProjectByUid(String Uid) {
         return allProjects
                 .stream()
-                .filter(projectStory -> projectStory.getUid().equals(Uid))
+                .filter(projectStory -> Objects.equals(projectStory.getUid(), Uid))
                 .findFirst()
                 .get();
     }
