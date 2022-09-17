@@ -31,7 +31,6 @@ public class IOUtilService {
         ProjectStoryWithAllDescendants projectStoryWithAllDescendants = new ProjectStoryWithAllDescendants();
         projectStoryWithAllDescendants.setProjectStory(theProject);
         projectStoryWithAllDescendants.setAllDescendants(allDescendants);
-        System.out.println("INFO:: num of descendants by recursion: " + allDescendants.size());
         return ow.writeValueAsString(projectStoryWithAllDescendants);
     }
 

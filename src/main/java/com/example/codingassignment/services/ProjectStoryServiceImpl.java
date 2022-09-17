@@ -3,6 +3,8 @@ package com.example.codingassignment.services;
 import com.example.codingassignment.datamodel.ProjectStory;
 import com.example.codingassignment.repository.ProjectStoryRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProjectStoryServiceImpl implements ProjectStoryService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     public ProjectStoryRepository projectStoryRepository;
     @Autowired
@@ -55,7 +58,7 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
             } else
                 return null;
         }
-            System.out.println("ERROR:: parentUid is empty or null");
+            logger.error("parentUid is empty or null");
             return null;
         }
 
