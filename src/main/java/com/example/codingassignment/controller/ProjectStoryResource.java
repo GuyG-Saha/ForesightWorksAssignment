@@ -1,4 +1,4 @@
-package controller;
+package com.example.codingassignment.controller;
 
 import com.example.codingassignment.datamodel.ProjectStory;
 import com.example.codingassignment.services.ProjectStoryService;
@@ -50,12 +50,10 @@ public class ProjectStoryResource {
     public String getProjectHierarchy(@PathVariable String projectStoryUid) throws JsonProcessingException {
         return projectStoryService.getJsonProjectHierarchy(projectStoryUid);
     }
-
     @GetMapping("/getCompletionStatus/{projectStoryUid}")
     public ResponseEntity<ProjectStory> getCompletionStatus(@PathVariable String projectStoryUid) {
         return ResponseEntity.ok(projectStoryService.calculateCompletionStatus(projectStoryUid));
     }
-
     @PostMapping("/getCompletionStatusByDate/{projectStoryUid}")
     public ResponseEntity<ProjectStory> getCompletionStatusByDate(@PathVariable String projectStoryUid,
                                                                   @RequestBody @DateTimeFormat(pattern="yyyy-MM-dd") Date date) {
