@@ -91,11 +91,19 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
     @Override
     public ProjectStory calculateCompletionStatus(String projectUid) {
         ProjectStory theProject = findProjectByUid(projectUid);
-        Integer completionStatus = calculateCompletionStatusByDates(theProject);
+        Integer completionStatus = calculateCompletionStatusByDates(theProject, null);
         theProject.setCompletionStatusPercentage(completionStatus);
         projectStoryRepository.save(theProject);
         return theProject;
+    }
 
+    @Override
+    public ProjectStory calculateCompletionStatusByProvidedDate(String projectUid, Date date) {
+        ProjectStory theProject = findProjectByUid(projectUid);
+        Integer completionStatus = calculateCompletionStatusByDates(theProject, date);
+        theProject.setCompletionStatusPercentage(completionStatus);
+        projectStoryRepository.save(theProject);
+        return theProject;
     }
 
     @Override
@@ -176,15 +184,16 @@ public class ProjectStoryServiceImpl implements ProjectStoryService {
                 .collect(Collectors.toList());
     }
 
-    private Integer calculateCompletionStatusByDates(ProjectStory theProject) {
+    private Integer calculateCompletionStatusByDates(ProjectStory theProject, Date date) {
         if (!Objects.nonNull(theProject.getStartDate()) &&
                 !Objects.nonNull(theProject.getEndDate())) {
             theProject = calculateDatesForProject(theProject.getUid());
         }
         double diffInDays = ((theProject.getEndDate().getTime() - theProject.getStartDate().getTime())
                 / (1000.0 * 60.0 * 60.0 * 24.0));
-        Date currentDate = new Date(System.currentTimeMillis());
-        double diffFromStartTillNow = ((currentDate.getTime() - theProject.getStartDate().getTime())
+        if (!Objects.nonNull(date))
+            date = new Date(System.currentTimeMillis());
+        double diffFromStartTillNow = ((date.getTime() - theProject.getStartDate().getTime())
                 / (1000.0 * 60.0 * 60.0 * 24.0));
         int value = ((int) (diffFromStartTillNow / diffInDays * 100));
         return value > 100 ? 100 : Math.max(value, 0);

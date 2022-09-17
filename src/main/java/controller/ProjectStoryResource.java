@@ -1,13 +1,15 @@
-package com.example.codingassignment.controller;
+package controller;
 
 import com.example.codingassignment.datamodel.ProjectStory;
 import com.example.codingassignment.services.ProjectStoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,5 +54,11 @@ public class ProjectStoryResource {
     @GetMapping("/getCompletionStatus/{projectStoryUid}")
     public ResponseEntity<ProjectStory> getCompletionStatus(@PathVariable String projectStoryUid) {
         return ResponseEntity.ok(projectStoryService.calculateCompletionStatus(projectStoryUid));
+    }
+
+    @PostMapping("/getCompletionStatusByDate/{projectStoryUid}")
+    public ResponseEntity<ProjectStory> getCompletionStatusByDate(@PathVariable String projectStoryUid,
+                                                                  @RequestBody @DateTimeFormat(pattern="yyyy-MM-dd") Date date) {
+        return ResponseEntity.ok(projectStoryService.calculateCompletionStatusByProvidedDate(projectStoryUid, date));
     }
 }
